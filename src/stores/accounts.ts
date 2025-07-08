@@ -26,6 +26,9 @@ export const useAccountsStore = defineStore("accounts", {
         password: "",
       });
     },
+    removeAccount(id: string) {
+      this.accounts = this.accounts.filter(account => account.id !== id);
+    },
   },
   persist: true,
 });

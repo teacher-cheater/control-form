@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { useAccountsStore } from "./stores/accounts";
+import { useAccountsStore } from "@/stores/accounts";
 const store = useAccountsStore();
 const accountLabels = ref<Record<string, string>>({});
 const accounts = computed(() => store.accounts);
@@ -28,6 +28,11 @@ const addAccount = () => {
   store.addAccount();
   const newAccount = store.accounts[store.accounts.length - 1];
   accountLabels.value[newAccount.id] = "";
+};
+
+const removeAccount = (id: string) => {
+  store.removeAccount(id);
+  delete accountLabels.value[id];
 };
 </script>
 
@@ -81,7 +86,11 @@ const addAccount = () => {
               </v-col>
 
               <v-col cols="12" md="1">
-                <v-btn color="error" icon="mdi-delete" />
+                <v-btn
+                  @click="removeAccount(account.id)"
+                  color="error"
+                  icon="mdi-delete"
+                />
               </v-col>
             </v-row>
           </v-card-text>
