@@ -1,4 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useAccountsStore } from "./stores/accounts";
+const store = useAccountsStore();
+const accountLabels = ref<Record<string, string>>({});
+const accounts = computed(() => store.accounts);
+
+store.accounts.forEach(account => {
+  accountLabels.value[account.id] = account.labels.map(l => l.text).join(';')
+})
+
+const addAccount = () => {
+  store.addAccount();
+  const newAccount = store.accounts[store.accounts.length - 1];
+  accountLabels.value[newAccount.id] = "";
+};
+</script>
 
 <template>
   <v-app>
@@ -6,10 +22,11 @@
       <v-container>
         <div class="d-flex justify-space-between align-center mb-6">
           <h1 class="text-h4">
-            Учетные записи <v-btn color="primary" icon="mdi-plus" />
+            Учетные записи
+            <v-btn @click="addAccount" color="primary" icon="mdi-plus" />
           </h1>
         </div>
-        <v-card class="mb-4">
+        <v-card v-for="account in accounts" :key="account.id" class="mb-4">
           <v-card-text>
             <v-row>
               <v-col cols="12" md="4" align-self="center">
@@ -20,7 +37,7 @@
                 />
               </v-col>
 
-              <v-col cols="12" md="3" >
+              <v-col cols="12" md="3">
                 <v-select label="Тип записи" />
               </v-col>
 
