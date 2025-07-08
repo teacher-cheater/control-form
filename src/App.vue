@@ -2,14 +2,29 @@
 import { ref, computed } from "vue";
 import { useAccountsStore } from "@/stores/accounts";
 const store = useAccountsStore();
+
+interface Label {
+  text: string;
+}
+
+type AccountType = "LDAP" | "Локальная";
+
+interface Account {
+  id: string;
+  login: string;
+  password?: string | null;
+  accountType: AccountType;
+  labels: Label[];
+}
+
 const accountLabels = ref<Record<string, string>>({});
-const accounts = computed(() => store.accounts);
+const accounts = computed<Account[]>(() => store.accounts);
 
 store.accounts.forEach(account => {
   accountLabels.value[account.id] = account.labels.map(l => l.text).join(";");
 });
 
-const accountTypes = [
+const accountTypes: { title: string; value: AccountType }[] = [
   { title: "LDAP", value: "LDAP" },
   { title: "Локальная", value: "Локальная" },
 ];
@@ -40,7 +55,7 @@ const updateLabels = (accountId: string) => {
     (a: { id: string }) => a.id === accountId
   );
   if (account) {
-    const labels = accountLabels.value[accountId]
+    const labels: Label[] = accountLabels.value[accountId]
       ? accountLabels.value[accountId]
           .split(";")
           .map(text => text.trim())
