@@ -29,6 +29,12 @@ export const useAccountsStore = defineStore("accounts", {
     removeAccount(id: string) {
       this.accounts = this.accounts.filter(account => account.id !== id);
     },
+    updateAccount(updatedAccount: Account) {
+      const index = this.accounts.findIndex(a => a.id === updatedAccount.id);
+      if (index !== -1) {
+        this.accounts[index] = { ...this.accounts[index], ...updatedAccount };
+      }
+    },
   },
   persist: true,
 });

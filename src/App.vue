@@ -34,6 +34,30 @@ const removeAccount = (id: string) => {
   store.removeAccount(id);
   delete accountLabels.value[id];
 };
+
+const updateLabels = (accountId: string) => {
+  const account = store.accounts.find(
+    (a: { id: string }) => a.id === accountId
+  );
+  if (account) {
+    const labels = accountLabels.value[accountId]
+      ? accountLabels.value[accountId]
+          .split(";")
+          .map(text => text.trim())
+          .filter(text => text)
+          .map(text => ({ text }))
+      : [];
+
+    store.updateAccount({
+      ...account,
+      labels,
+    });
+  }
+};
+
+const updateAccount = (account: any) => {
+  store.updateAccount(account);
+};
 </script>
 
 <template>
@@ -55,6 +79,7 @@ const removeAccount = (id: string) => {
                   label="Метка"
                   hint="Введите текстовые метки через точку с запятой (;)"
                   :maxlength="50"
+                  @blur="updateLabels(account.id)"
                 />
               </v-col>
 
@@ -63,6 +88,7 @@ const removeAccount = (id: string) => {
                   v-model="account.accountType"
                   :items="accountTypes"
                   label="Тип записи"
+                  @update:model-value="updateAccount(account)"
                 />
               </v-col>
 
@@ -72,16 +98,22 @@ const removeAccount = (id: string) => {
                   v-model="account.login"
                   label="Логин"
                   :maxlength="100"
+                  @blur="updateAccount(account)"
                 />
               </v-col>
 
-              <v-col cols="12" md="2">
+              <v-col
+                v-if="account.accountType === 'Локальная'"
+                cols="12"
+                md="2"
+              >
                 <v-text-field
                   v-model="account.password"
                   label="Пароль"
                   type="password"
                   :rules="passwordRules"
                   :maxlength="100"
+                  @blur="updateAccount(account)"
                 />
               </v-col>
 
